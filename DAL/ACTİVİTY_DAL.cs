@@ -22,11 +22,11 @@ namespace DAL
                 a.Customer = DB.Customers.Find(c.id);
                 DB.Activitys.Add(a);
                 DB.SaveChanges();
-                return "Kayıt Başarılı Bir şekilde gerçekleştı";
+                return "Erfolgreich gespeichert.";
             }
             catch (Exception e)
             {
-                return "Kayıt Sırasında Bir Sorun Oluştu \n  " + e.Message;
+                return "Beim Speichern ist ein Fehler aufgetreten:\n" + e.Message;
             }
         }
 
@@ -34,8 +34,8 @@ namespace DAL
 
         public DataTable Read_All()
         {
-            string cmd = "SELECT        dbo.ACTİVİTY.id, dbo.ACTİVİTY.Title AS Konu, dbo.ACTİVİTY.İnfo AS Açıklama, dbo.ACTİVİTY.RegDate AS [Kayıt tarihi], dbo.ACTİVİTY_CATEGORY.CategoryName AS [konnu Başlığı],                          dbo.ACTİVİTY_CATEGORY.DeletStatus AS Expr1, dbo.USERs.UserName AS Temsilci FROM            dbo.ACTİVİTY INNER JOIN          dbo.USERs ON dbo.ACTİVİTY.User_id = dbo.USERs.id INNER JOIN            dbo.ACTİVİTY_CATEGORY ON dbo.ACTİVİTY.ActivityCategory_id = dbo.ACTİVİTY_CATEGORY.id  WHERE        (dbo.ACTİVİTY.DeletStatus = 0) AND (dbo.ACTİVİTY_CATEGORY.DeletStatus = 0)";
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            string cmd = "SELECT dbo.ACTİVİTY.id, dbo.ACTİVİTY.Title AS Konu, dbo.ACTİVİTY.İnfo AS Açıklama, dbo.CUSTOMERs.Company AS Firma, dbo.ACTİVİTY.RegDate AS [Kayıt tarihi], dbo.ACTİVİTY_CATEGORY.CategoryName AS [konnu Başlığı], dbo.ACTİVİTY.User_id AS GörevliKodu, dbo.USERs.UserName AS Temsilci FROM dbo.ACTİVİTY INNER JOIN dbo.USERs ON dbo.ACTİVİTY.User_id = dbo.USERs.id INNER JOIN dbo.ACTİVİTY_CATEGORY ON dbo.ACTİVİTY.ActivityCategory_id = dbo.ACTİVİTY_CATEGORY.id LEFT JOIN dbo.CUSTOMERs ON dbo.ACTİVİTY.Customer_id = dbo.CUSTOMERs.id WHERE (dbo.ACTİVİTY.DeletStatus = 0) ORDER BY dbo.ACTİVİTY.RegDate DESC";
+            SqlConnection con = new SqlConnection(DB.ConStr);
             var adaptor = new SqlDataAdapter(cmd, con);
             var bulider = new SqlCommandBuilder(adaptor);
             var ds = new DataSet();
@@ -52,13 +52,33 @@ namespace DAL
                 {
                     q.DeletStatus = true;
                     DB.SaveChanges();
-                    return "Silme başarılı bir şekilde gerçekleştı";
+                    return "Erfolgreich gelöscht.";
                 }
-                return "Aktivity Bulunamadı";
+                return "Aktivität nicht gefunden.";
             }
             catch (Exception e)
             {
-                return "Silme Sırasında Bir Sorun Oluştu \n  " + e.Message;
+                return "Beim Löschen ist ein Fehler aufgetreten:\n" + e.Message;
+            }
+        }
+
+        public string Update(int id, string title, string info)
+        {
+            try
+            {
+                var q = DB.Activitys.Where(i => i.id == id).FirstOrDefault();
+                if (q != null)
+                {
+                    q.Title = title;
+                    q.İnfo = info;
+                    DB.SaveChanges();
+                    return "Änderungen gespeichert.";
+                }
+                return "Aktivität nicht gefunden.";
+            }
+            catch (Exception e)
+            {
+                return "Beim Ändern ist ein Fehler aufgetreten:\n" + e.Message;
             }
         }
 
@@ -78,7 +98,7 @@ namespace DAL
 
         public DataTable Search(string s)
         {
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             SqlCommand com = new SqlCommand("dbo.SearchActivity");
             com.Parameters.AddWithValue("@Search", s);
             com.Connection = con;

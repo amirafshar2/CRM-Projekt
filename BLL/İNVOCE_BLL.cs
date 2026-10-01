@@ -28,6 +28,14 @@ namespace BLL
         {
             return DAL.Delete(id);
         }
+        public İNVOİCE read_full(int id)
+        {
+            return DAL.read_full(id);
+        }
+        public string AddPayment(int id, double betrag, PAYMENT_METHOD art, DateTime datum)
+        {
+            return DAL.AddPayment(id, betrag, art, datum);
+        }
         public İNVOİCE read_by_id(int id)
         {
             return DAL.read_by_id(id);

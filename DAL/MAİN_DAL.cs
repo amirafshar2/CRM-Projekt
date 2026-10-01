@@ -18,54 +18,45 @@ namespace DAL
 
 
 
+        // Abrechnungsmonat: jeweils vom 10. bis zum 10. des Folgemonats
+        // (vorher Absturz im Januar, weil Monat 0 berechnet wurde)
+        static void Period(out DateTime first, out DateTime last)
+        {
+            DateTime today = DateTime.Today;
+            DateTime start = today.Day <= 10 ? today.AddMonths(-1) : today;
+            first = new DateTime(start.Year, start.Month, 10);
+            last = first.AddMonths(1);
+        }
+
         public string TotalReminders(USER u)
         {
             return DB.reminders.Where(i => i.Users.id == u.id && i.DeletStatus == false && i.İsDone == false).Count().ToString();
         }
         public string Totalmonthlisales(USER u)
         {
-            DateTime today = DateTime.Today;
             DateTime FirstDayOfTheThisMonth;
             DateTime LastDayOfTheThisMonth;
-            if (today.Day <= 10 && today.Day >= 1)
-            {
-                FirstDayOfTheThisMonth = new DateTime(today.Year, ((today.Month) - 1), 10, 00, 00, 00, 0000);
-                LastDayOfTheThisMonth = FirstDayOfTheThisMonth.AddMonths(1);
-            }
-            else
-            {
-                FirstDayOfTheThisMonth = new DateTime(today.Year, today.Month, 10, 00, 00, 00, 0000);
-                LastDayOfTheThisMonth = FirstDayOfTheThisMonth.AddMonths(1);
-            }
+            Period(out FirstDayOfTheThisMonth, out LastDayOfTheThisMonth);
 
             var q = DB.invoices.Where(i => i.User.id == u.id && i.Deletestatus == false && i.RegDate >= FirstDayOfTheThisMonth && i.RegDate < LastDayOfTheThisMonth).Sum(i => (double?)i.TotalPrice);
             if (q.HasValue)
             {
-                return q.ToString();
+                return q.Value.ToString("N2");
             }
             return "0,00";
 
         }
         public string Total_monthli_Payment(USER u)
         {
-            DateTime today = DateTime.Today;
             DateTime FirstDayOfTheThisMonth;
             DateTime LastDayOfTheThisMonth;
-            if (today.Day <= 10 && today.Day >= 1)
-            {
-                FirstDayOfTheThisMonth = new DateTime(today.Year, ((today.Month) - 1), 10, 00, 00, 00, 0000);
-                LastDayOfTheThisMonth = FirstDayOfTheThisMonth.AddMonths(1);
-            }
-            else
-            {
-                FirstDayOfTheThisMonth = new DateTime(today.Year, today.Month, 10, 00, 00, 00, 0000);
-                LastDayOfTheThisMonth = FirstDayOfTheThisMonth.AddMonths(1);
-            }
+            Period(out FirstDayOfTheThisMonth, out LastDayOfTheThisMonth);
 
-            var q = DB.invoices.Where(i => i.User.id == u.id && i.Deletestatus == false && i.RegDate >= FirstDayOfTheThisMonth && i.RegDate < LastDayOfTheThisMonth && i.İsCheckedOut == true).Sum(i => (double?)i.TotalPrice);
+            // Summe der eingegangenen Zahlungen (auch Teilzahlungen) im Zeitraum
+            var q = DB.invoices.Where(i => i.User.id == u.id && i.Deletestatus == false && i.ÖdemeDate >= FirstDayOfTheThisMonth && i.ÖdemeDate < LastDayOfTheThisMonth).Sum(i => i.ÖdemeTurarı);
             if (q.HasValue)
             {
-                return q.ToString();
+                return q.Value.ToString("N2");
             }
             return "0,00";
 
@@ -77,19 +68,9 @@ namespace DAL
         }
         public string NewCustumerİnmonth(USER u)
         {
-            DateTime today = DateTime.Today;
             DateTime FirstDayOfTheThisMonth;
             DateTime LastDayOfTheThisMonth;
-            if (today.Day <= 10 && today.Day >= 1)
-            {
-                FirstDayOfTheThisMonth = new DateTime(today.Year, ((today.Month) - 1), 10, 00, 00, 00, 0000);
-                LastDayOfTheThisMonth = FirstDayOfTheThisMonth.AddMonths(1);
-            }
-            else
-            {
-                FirstDayOfTheThisMonth = new DateTime(today.Year, today.Month, 10, 00, 00, 00, 0000);
-                LastDayOfTheThisMonth = FirstDayOfTheThisMonth.AddMonths(1);
-            }
+            Period(out FirstDayOfTheThisMonth, out LastDayOfTheThisMonth);
 
             var q = DB.Customers.Where(i => i.User.id == u.id && i.DeletStatus == false && i.Regdate >= FirstDayOfTheThisMonth && i.Regdate < LastDayOfTheThisMonth).Count().ToString();
             if (q != null)
@@ -101,7 +82,8 @@ namespace DAL
 
         public string TotalStock()
         {
-            return DB.products.Where(i => i.DeletStatus == false).Sum(i => (double?)i.Stock).ToString();
+            double? s = DB.products.Where(i => i.DeletStatus == false && i.SaledPices == 0).Sum(i => (double?)i.Stock);
+            return (s ?? 0).ToString("N0");
         }
         public List<REMİNDER> Getuserreminder(USER u)
         {
@@ -123,28 +105,17 @@ namespace DAL
         public bool Reminder_ihtar( USER u)
         {
             List<REMİNDER> r = DB.reminders.Where(i => i.Users.id == u.id && i.İsDone == false && i.DeletStatus == false).ToList();
-            foreach (var item in r)
-            {
-                if (item.ReminDate < DateTime.Now.Date)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            return false;
+            // Warnsymbol, sobald irgendeine Erinnerung überfällig ist
+            return r.Any(item => item.ReminDate < DateTime.Now.Date);
         }
         public string Product_sale_pices()
         {
-            var q = DB.products.Where(i => i.id > 0).FirstOrDefault();
-            if (q != null)
-            {
-                //var sum = DB.products.Where(i => i.SaledPices != 0).Select(i => i.SaledPices).Sum();
-                //return sum.ToString();
-            }
-            return "";
+            // verkaufte Stück im aktuellen Abrechnungsmonat (aus nicht gelöschten Rechnungen)
+            DateTime first, last;
+            Period(out first, out last);
+            int? sum = DB.products.Where(i => i.SaledPices > 0 && i.invoices.Any(inv => inv.Deletestatus == false && inv.RegDate >= first && inv.RegDate < last))
+                                  .Sum(i => (int?)i.SaledPices);
+            return (sum ?? 0).ToString("N0") + " Stück";
         }
     }
 }

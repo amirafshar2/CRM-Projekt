@@ -18,11 +18,11 @@ namespace DAL
             {
                 db.usergrups.Add(u);
                 db.SaveChanges();
-                return "Kayıt Başarılı Bir Şekilde Gerçekleşti";
+                return "Erfolgreich gespeichert.";
             }
             catch (Exception e)
             {
-                return " Kayıt sırasında bir sorun oluştu \n" + e.Message;
+                return "Beim Speichern ist ein Fehler aufgetreten:\n" + e.Message;
 
             }
 
@@ -30,7 +30,7 @@ namespace DAL
         public DataTable GetAll()
         {
             string cmd = "SELECT        id, Title AS [Yetki Ünvanı] FROM            dbo.USER_GROUP  WHERE        (DeleteStatus = 0)";
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             var adaptor = new SqlDataAdapter(cmd, con);
             var bulider = new SqlCommandBuilder(adaptor);
             var ds = new DataSet();
@@ -43,7 +43,7 @@ namespace DAL
         }
         public USER_GROUP getug_bytitle(string s)
         {
-            return db.usergrups.SingleOrDefault(ı => ı.Title == s);
+            return db.usergrups.FirstOrDefault(ı => ı.Title == s && ı.DeleteStatus == false);
         }
         public List<string> GetTitle()
         {
@@ -60,11 +60,11 @@ namespace DAL
                     q.DeleteStatus = true;
                     db.SaveChanges();
                 }
-                return "Silme  Başarılı Bir Şekilde Gerçekleşti";
+                return "Erfolgreich gelöscht.";
             }
             catch (Exception e)
             {
-                return " Silme sırasında bir sorun oluştu \n" + e.Message;
+                return "Beim Löschen ist ein Fehler aufgetreten:\n" + e.Message;
 
             }
         }

@@ -48,7 +48,7 @@ namespace BLL
                 return dAL.Create(u, ug, reminder);
 
             }
-            return "Kulanıcı Daha Önce kayıt Edildı";
+            return "Dieser Benutzername ist bereits vergeben.";
         }
         public DataTable ReadAll()
         {

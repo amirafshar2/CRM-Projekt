@@ -27,32 +27,25 @@ namespace DAL
                 }
 
                 DB.SaveChanges();
-                return "Kayıt Başarılı Bir Şekilde Gerçekleştı";
+                return "Erfolgreich gespeichert.";
 
             }
             catch (Exception e)
             {
-                return "Kayıt Sırasında Bir sorun oluştu \n" + e.Message;
+                return "Beim Speichern ist ein Fehler aufgetreten:\n" + e.Message;
 
             }
 
         }
         public bool Cheack(USER u)
         {
-            foreach (var item in DB.users)
-            {
-                if (item.UserName != u.UserName)
-                {
-                    return true;
-                }
-                return false;
-            }
-            return true;
+            // true = Benutzername ist noch frei
+            return !DB.users.Any(i => i.UserName == u.UserName && i.DeletStatus == false);
         }
         public DataTable ReadAll()
         {
             string cmd = "SELECT        id, Name, UserName, Password, Pic, Status, Regtime FROM            dbo.USERs WHERE        (DeletStatus = 0)";
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             var adaptor = new SqlDataAdapter(cmd, con);
             var bulider = new SqlCommandBuilder(adaptor);
             var ds = new DataSet();
@@ -76,7 +69,7 @@ namespace DAL
                 var q = DB.users.Where(i => i.id == id).FirstOrDefault();
                 if (q != null)
                 {
-                    u.userGroup = DB.usergrups.Find(ug.id);
+                    q.userGroup = DB.usergrups.Find(ug.id); // Rolle wird jetzt wirklich geändert
                     q.Name = u.Name;
                     q.UserName = u.UserName;
                     q.Password = u.Password;
@@ -87,13 +80,13 @@ namespace DAL
                     q.Pic = u.Pic;
                     q.PhoneNumber= u.PhoneNumber;
                     DB.SaveChanges();
-                    return "Düzenleme Başarılı Bir Şekilde Gerçekleştı";
+                    return "Änderungen gespeichert.";
                 }
-                return "Kulanıcı Bulunamadı";
+                return "Benutzer nicht gefunden.";
             }
             catch (Exception e)
             {
-                return "Düzenleme Sırasında Bir sorun oluştu \n" + e.Message;
+                return "Beim Ändern ist ein Fehler aufgetreten:\n" + e.Message;
 
             }
 
@@ -107,13 +100,13 @@ namespace DAL
                 {
                     q.DeletStatus = true;
                     DB.SaveChanges();
-                    return "Silme Başarılı Bir Şekilde Gerçekleştı";
+                    return "Erfolgreich gelöscht.";
                 }
-                return "Kulanıcı Bulunamadı";
+                return "Benutzer nicht gefunden.";
             }
             catch (Exception e)
             {
-                return "Silme Sırasında Bir sorun oluştu \n" + e.Message;
+                return "Beim Löschen ist ein Fehler aufgetreten:\n" + e.Message;
 
             }
 
@@ -165,7 +158,9 @@ namespace DAL
         public bool Access(USER u, string s, can a)
         {
             USER_GROUP ug = DB.usergrups.Include("Roles").Where(i => i.id == u.userGroup.id).FirstOrDefault();
+            if (ug == null) return false;
             USER_ACCESS_ROLE ura = ug.Roles.Where(z => z.Section == s).FirstOrDefault();
+            if (ura == null) return false; // Bereich nicht vorhanden -> kein Zugriff
             if (a == can.Read)
             {
                 return ura.CanRead;

@@ -27,6 +27,10 @@ namespace BLL
         }
 
 
+        public string Update(int id, string title, string info)
+        {
+            return dal.Update(id, title, info);
+        }
         public ACTİVİTY Read_byid(int id)
         {
             return dal.Read_byid(id);

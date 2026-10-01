@@ -40,7 +40,7 @@ namespace BLL
             {
                 return DAL.Create(c, u);
             }
-            return " Müşteri Daha Önce Bu Firma Adı Ve Ya Telefon No İle Kayıt Edilmiş ";
+            return "Ein Kunde mit dieser Firma und Telefonnummer existiert bereits.";
 
         }
         public DataTable readall()

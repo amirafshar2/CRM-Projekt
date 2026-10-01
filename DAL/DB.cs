@@ -10,6 +10,9 @@ namespace DAL
 {
     public class DB :DbContext
     {
+        // Zentrale Verbindungszeichenfolge aus App.config ("constr") – wird von allen DAL-Klassen genutzt
+        public static readonly string ConStr = System.Configuration.ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
+
         public DB() : base("constr")
         {
 

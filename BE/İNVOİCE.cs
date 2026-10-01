@@ -33,9 +33,9 @@ namespace BE
 }
 public enum PAYMENT_METHOD
 {
-    Nakit,
-    KrediKartı_Tekçekim,
-    Kredikartı_Taksitli,
-    Vadeli,
-    Çek
+    Bar,
+    Kreditkarte,
+    Kreditkarte_Raten,
+    Auf_Ziel,
+    Scheck
 }

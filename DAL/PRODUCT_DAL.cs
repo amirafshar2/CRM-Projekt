@@ -31,17 +31,17 @@ namespace DAL
                 c.Product_cod = s;
                 db.products.Add(c);
                 db.SaveChanges();
-                return " Kayıt Başarılı bir şekilde Gerçekleştı ";
+                return "Erfolgreich gespeichert.";
             }
             catch (Exception e)
             {
-                return "Kayıt Sırasında Bir Sorun Oluştu : \n " + e.Message;
+                return "Beim Speichern ist ein Fehler aufgetreten:\n" + e.Message;
             }
         }
         public DataTable ReadAll()
         {
             string cmd = "SELECT        id, Category AS Ürün, Name AS [Ürün Adı], Cap AS Çap, Boy, Quality AS Kalite, Kaplama, DINnumber AS DIN, Stock AS Stok, Price AS Fiyat, BrandName AS Marka, Packing AS Paket, picture AS Görsel,                            Feature AS Özellik  FROM            dbo.PRODUCTs WHERE        (DeletStatus = 0) AND (SaledPices = 0) ";
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             var sqladapter = new SqlDataAdapter(cmd, con);
             var commandbuilder = new SqlCommandBuilder(sqladapter);
             var ds = new DataSet();
@@ -65,7 +65,7 @@ namespace DAL
 
         public DataTable Search(String s)
         {
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             SqlCommand com = new SqlCommand("dbo.SearchProduct");
             com.Parameters.AddWithValue("@Search", s);
             com.Connection = con;
@@ -101,13 +101,13 @@ namespace DAL
                     q.DeletStatus = p.DeletStatus;
                     q.picture = p.picture;
                     db.SaveChanges();
-                    return " Düzenleme Başarılı bir şekilde Gerçekleştı ";
+                    return "Änderungen gespeichert.";
                 }
-                return "Ürün bulunmadı";
+                return "Produkt nicht gefunden.";
             }
             catch (Exception e)
             {
-                return "Düzenleme Sırasında Bir Sorun Oluştu : \n " + e.Message;
+                return "Beim Ändern ist ein Fehler aufgetreten:\n" + e.Message;
             }
 
 
@@ -121,13 +121,13 @@ namespace DAL
                 {
                     q.DeletStatus = true;
                     db.SaveChanges();
-                    return " Silme Başarılı bir şekilde Gerçekleştı ";
+                    return "Erfolgreich gelöscht.";
                 }
-                return "Ürün bulunmadı";
+                return "Produkt nicht gefunden.";
             }
             catch (Exception e)
             {
-                return "Silme Sırasında Bir Sorun Oluştu : \n " + e.Message;
+                return "Beim Löschen ist ein Fehler aufgetreten:\n" + e.Message;
             }
         }
 

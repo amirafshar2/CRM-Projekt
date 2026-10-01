@@ -19,12 +19,12 @@ namespace DAL
                 r.Users = db.users.Find(u.id);
                 db.reminders.Add(r);
                 db.SaveChanges();
-                return "Kayıt Başarılı Bir Şekilde Gerçekleştı ";
+                return "Erfolgreich gespeichert.";
 
             }
             catch (Exception e)
             {
-                return "Katıt Sırasında Bir sorun Oluştu \n " + e.Message;
+                return "Beim Speichern ist ein Fehler aufgetreten:\n" + e.Message;
 
             }
 
@@ -33,7 +33,7 @@ namespace DAL
         public DataTable Read_all()
         {
             string cmd = "SELECT        dbo.REMİNDER.id, dbo.REMİNDER.Title AS [Hatırlatma Konusu], dbo.REMİNDER.Reminderİnfo AS [Hatırlatıcı Açıklaması], dbo.REMİNDER.ReminDate AS [Hatırlatma Tarihi],               dbo.REMİNDER.İsDone AS [Yapıldı mı?], dbo.USERs.UserName AS Görevli FROM            dbo.REMİNDER INNER JOIN                          dbo.USERs ON dbo.REMİNDER.Users_id = dbo.USERs.id WHERE       (dbo.REMİNDER.İsDone = 0) AND  (dbo.REMİNDER.DeletStatus = 0)  ";
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             var adaptor = new SqlDataAdapter(cmd, con);
             var bulider = new SqlCommandBuilder(adaptor);
             var ds = new DataSet();
@@ -44,7 +44,7 @@ namespace DAL
         }
         public DataTable ReminderSearch(string s)
         {
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             SqlCommand com = new SqlCommand("dbo.ReminderSearch");
             com.Parameters.AddWithValue("@Search", s);
             com.Connection = con;
@@ -72,13 +72,13 @@ namespace DAL
                     q.Reminderİnfo = c.Reminderİnfo;                    
                     q.ReminDate = c.ReminDate;
                     db.SaveChanges();
-                    return " Düzenleme Başarılı bir şekilde Gerçekleştı ";
+                    return "Änderungen gespeichert.";
                 }
-                return " Düzenleme Gerçekleşmedı";
+                return "Eintrag nicht gefunden.";
             }
             catch (Exception e)
             {
-                return "Düzenleme Sırasında Bir Sorun Oluştu : \n " + e.Message;
+                return "Beim Ändern ist ein Fehler aufgetreten:\n" + e.Message;
 
             }
         }
@@ -93,13 +93,13 @@ namespace DAL
                     q.İsDone = true;
 
                     db.SaveChanges();
-                    return " Düzenleme Başarılı bir şekilde Gerçekleştı ";
+                    return "Änderungen gespeichert.";
                 }
-                return " Düzenleme Gerçekleşmedı";
+                return "Eintrag nicht gefunden.";
             }
             catch (Exception e)
             {
-                return "Düzenleme Sırasında Bir Sorun Oluştu : \n " + e.Message;
+                return "Beim Ändern ist ein Fehler aufgetreten:\n" + e.Message;
 
             }
         }
@@ -112,14 +112,14 @@ namespace DAL
                 {
                     q.DeletStatus = true;
                     db.SaveChanges();
-                    return " Silme Başarılı bir şekilde Gerçekleştı ";
+                    return "Erfolgreich gelöscht.";
                 }
-                return " Silme Gerçekleşmedı";
+                return "Eintrag nicht gefunden.";
 
             }
             catch (Exception e)
             {
-                return "Silme Sırasında Bir Sorun Oluştu : \n " + e.Message;
+                return "Beim Löschen ist ein Fehler aufgetreten:\n" + e.Message;
             }
         }
 

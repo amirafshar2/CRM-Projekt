@@ -19,16 +19,16 @@ namespace DAL
                 c.User = db.users.Find(u.id);
                 db.Customers.Add(c);
                 db.SaveChanges();
-                return " Kayıt Başarılı bir şekilde Gerçekleştı ";
+                return "Erfolgreich gespeichert.";
             }
             catch (Exception e)
             {
-                return "Kayıt Sırasında Bir Sorun Oluştu : \n " + e.Message;
+                return "Beim Speichern ist ein Fehler aufgetreten:\n" + e.Message;
             }
         }
         public bool Check(CUSTOMER c)
         {
-            var q = db.Customers.Where(i => i.Company == c.Company & i.Phone == c.Phone);
+            var q = db.Customers.Where(i => i.Company == c.Company & i.Phone == c.Phone & i.DeletStatus == false);
             if (q.Count() == 0)
             {
                 return true;
@@ -38,7 +38,7 @@ namespace DAL
         public DataTable ReadAll()
         {
             string cmd = "SELECT        id AS İd, Name AS İsim, Company AS Firma, Phone AS [Telefon No], Email AS [Email Adres], Regdate AS [Kayıt Tarihi]\r\nFROM            dbo.CUSTOMERs\r\nWHERE        (DeletStatus = 0)";
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             var sqladapter = new SqlDataAdapter(cmd, con);
             var commandbuilder = new SqlCommandBuilder(sqladapter);
             var ds = new DataSet();
@@ -47,7 +47,7 @@ namespace DAL
         }
         public DataTable SearchCustomer(string s)
         {
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             SqlCommand com = new SqlCommand("dbo.SearchCustumer");
             com.Parameters.AddWithValue("@Search", s);
             com.Connection = con;
@@ -74,17 +74,17 @@ namespace DAL
                     q.Company = c.Company;
                     q.Phone = c.Phone;
                     q.Email = c.Email;
-                    q.Regdate = c.Regdate;
+                    // Anlagedatum bleibt beim Bearbeiten erhalten
                     q.Adress = c.Adress;
-                    q.vergidairesi_bilgileri = c.Adress;
+                    q.vergidairesi_bilgileri = c.vergidairesi_bilgileri;
                     db.SaveChanges();
-                    return " Düzenleme Başarılı bir şekilde Gerçekleştı ";
+                    return "Änderungen gespeichert.";
                 }
-                return " Düzenleme Gerçekleşmedı";
+                return "Eintrag nicht gefunden.";
             }
             catch (Exception e)
             {
-                return "Düzenleme Sırasında Bir Sorun Oluştu : \n " + e.Message;
+                return "Beim Ändern ist ein Fehler aufgetreten:\n" + e.Message;
 
             }
         }
@@ -97,14 +97,14 @@ namespace DAL
                 {
                     q.DeletStatus = true;
                     db.SaveChanges();
-                    return " Silme Başarılı bir şekilde Gerçekleştı ";
+                    return "Erfolgreich gelöscht.";
                 }
-                return " Silme Gerçekleşmedı";
+                return "Eintrag nicht gefunden.";
 
             }
             catch (Exception e)
             {
-                return "Silme Sırasında Bir Sorun Oluştu : \n " + e.Message;
+                return "Beim Löschen ist ein Fehler aufgetreten:\n" + e.Message;
             }
         }
         public CUSTOMER Readbyid(int id)
@@ -122,7 +122,7 @@ namespace DAL
         }
         public CUSTOMER Readname(string s)
         {
-            return db.Customers.Where(i => i.Company == s).FirstOrDefault();
+            return db.Customers.Where(i => i.Company == s && i.DeletStatus == false).FirstOrDefault();
         }
         //public UserClass customer_user_id_read (Customerclass c)
         //{
@@ -134,7 +134,7 @@ namespace DAL
         //}
         public DataTable customer_user_id_read(int s)
         {
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             SqlCommand com = new SqlCommand("dbo.customer_user_id_read");
             com.Parameters.AddWithValue("@Search", s);
             com.Connection = con;
@@ -155,7 +155,7 @@ namespace DAL
         public int Userid_read_from_Customer(int s)
         {
             return db.Customers.Include("users").Where(i=>i.id  == s).Select(i=> i.User.id).FirstOrDefault();
-            //    SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            //    SqlConnection con = new SqlConnection(DB.ConStr);
             //    SqlCommand com = new SqlCommand("dbo.Userid_read_from_Customer");
             //    com.Parameters.AddWithValue("@Search", s);
             //    com.Connection = con;
@@ -193,7 +193,7 @@ namespace DAL
         }
         public DataTable Read_Bakiye(int id)
         {
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             SqlCommand com = new SqlCommand("dbo.Custumer_Bakiye_Search");
             com.Parameters.AddWithValue("@Search", id);
             com.Connection = con;
@@ -208,7 +208,7 @@ namespace DAL
         
         public DataTable İnvoice_Customer_Search(string s)
         {
-            SqlConnection con = new SqlConnection("Data Source=.;Initial Catalog=DBCRM;Integrated Security=true");
+            SqlConnection con = new SqlConnection(DB.ConStr);
             SqlCommand com = new SqlCommand("dbo.İnvoice_Customer_Search");
             com.Parameters.AddWithValue("@Search", s);
             com.Connection = con;

@@ -19,11 +19,11 @@ namespace DAL
 
                 DB.ActivityCategories.Add(a);
                 DB.SaveChanges();
-                return "Kayıt Başarılı Bir şekilde gerçekleştı";
+                return "Erfolgreich gespeichert.";
             }
             catch (Exception e)
             {
-                return "Kayıt Sırasında Bir Sorun Oluştu \n  " + e.Message;
+                return "Beim Speichern ist ein Fehler aufgetreten:\n" + e.Message;
             }
         }
         public List< ACTİVİTY_CATEGORY> Read_All()
@@ -40,16 +40,16 @@ namespace DAL
                     q.DeletStatus = true;
                 }
                 DB.SaveChanges();
-                return "Silme Başarılı Bir şekilde gerçekleştı";
+                return "Erfolgreich gelöscht.";
             }
             catch (Exception e)
             {
-                return "Silme Sırasında Bir Sorun Oluştu \n  " + e.Message;
+                return "Beim Löschen ist ein Fehler aufgetreten:\n" + e.Message;
             }
         }
         public ACTİVİTY_CATEGORY Readaccatagory(string s)
         {
-            return DB.ActivityCategories.Where(i => i.CategoryName == s).SingleOrDefault();
+            return DB.ActivityCategories.Where(i => i.CategoryName == s && i.DeletStatus == false).FirstOrDefault();
         }
 
         public List<string> Readkatrgoryname()
