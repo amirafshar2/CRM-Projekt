@@ -361,5 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-# Installationspaket (wird aus bin\Release erzeugt, als GitHub-Release hochladen)
+# Setup.exe (wird mit Installer\SetupWizard\Erstellen.cmd erzeugt, als GitHub-Release hochladen)
 Installer/Ausgabe/
+Installer/SetupWizard/payload.zip
+Installer/SetupWizard/logo.png
+Installer/SetupWizard/app.ico
+
+.icons_sheet.png
+Installer/SetupWizard/LICENSE.txt
+Installer/SetupWizard/THIRD-PARTY-NOTICES.txt

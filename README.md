@@ -13,6 +13,8 @@ Windows-Desktop-Anwendung mit **C#**, **WPF / Windows Forms** und **Entity Frame
 ![SQL Server](https://img.shields.io/badge/SQL_Server-LocalDB-CC2927?logo=microsoftsqlserver&logoColor=white)
 ![Demo](https://img.shields.io/badge/Demo-sofort_testbar-2E7D32)
 
+### [⬇️ Demo herunterladen (SchraubwerkCRM-Setup.exe)](https://github.com/amirafshar2/CRM-Projekt/releases/latest/download/SchraubwerkCRM-Setup.exe)
+
 ![Startseite](screenshots/02-startseite.jpg)
 
 </div>
@@ -28,7 +30,8 @@ Windows-Desktop-Anwendung mit **C#**, **WPF / Windows Forms** und **Entity Frame
 - [Architektur](#️-architektur)
 - [Technologien](#-technologien)
 - [Für Entwickler: Projekt starten](#-für-entwickler-projekt-starten)
-- [Installationspaket erstellen](#-installationspaket-erstellen)
+- [Setup erstellen](#-setup-erstellen)
+- [Rechtliches & Lizenzen](#️-rechtliches--lizenzen)
 - [Kontakt](#-kontakt)
 
 ---
@@ -40,26 +43,27 @@ Es bündelt die tägliche Arbeit an einem Ort: Kunden und Produkte verwalten, Ve
 Zahlungen buchen und Aufgaben an Mitarbeitende verteilen – geschützt durch Benutzerrollen mit feinen Rechten.
 
 Die vorliegende Version ist eine **Demo-Version**: Beim ersten Start legt das Programm Datenbank, gespeicherte Prozeduren,
-Benutzer und Beispieldaten selbst an. Es ist keine Lizenz und keine Datenbank-Einrichtung nötig.
+Benutzer und Beispieldaten selbst an. Es ist kein Lizenzschlüssel und keine Datenbank-Einrichtung nötig.
 
 ---
 
 ## 🚀 Demo ausprobieren
 
-1. Unter **[Releases](../../releases)** die Datei **`SchraubwerkCRM-Demo-Setup.zip`** herunterladen und entpacken.
-2. **`Installieren.cmd`** doppelklicken.
-   - Fehlt *SQL Server Express LocalDB*, wird es automatisch von Microsoft geladen und installiert (einmalig Administratorrechte).
-   - Das Programm wird nach `%LOCALAPPDATA%\Programs\SchraubwerkCRM` kopiert, Verknüpfungen landen auf dem Desktop und im Startmenü.
-3. Das Programm startet automatisch – **Benutzer `demo` / Passwort `demo123`** sind bereits eingetragen.
+1. **[⬇️ SchraubwerkCRM-Setup.exe herunterladen](https://github.com/amirafshar2/CRM-Projekt/releases/latest/download/SchraubwerkCRM-Setup.exe)** (alle Versionen unter [Releases](https://github.com/amirafshar2/CRM-Projekt/releases)).
+2. Doppelklick → **Installieren** → **Fertigstellen** – das Programm startet sofort.
+
+Der Setup-Assistent installiert ohne Administratorrechte nach `%LOCALAPPDATA%\Programs\SchraubwerkCRM`,
+legt Verknüpfungen auf dem Desktop und im Startmenü an und trägt das Programm unter **„Apps & Features“** ein (dort auch deinstallierbar).
+Fehlt *SQL Server Express LocalDB*, lädt der Assistent es automatisch von Microsoft (einmalige Windows-Abfrage).
 
 | Benutzer | Passwort | Rolle |
 |---|---|---|
-| `demo` | `demo123` | Admin – alle Rechte |
+| `demo` | `demo123` | Admin – alle Rechte (wird automatisch eingetragen) |
 | `m.schulz` | `demo123` | Vertrieb – eingeschränkte Rechte (kein Löschen, keine Benutzerverwaltung) |
 
-> Voraussetzungen: Windows 10/11, .NET Framework 4.7.2 (in Windows 10/11 enthalten).
-> Warnt Windows SmartScreen, auf **„Weitere Informationen“ → „Trotzdem ausführen“** klicken (das Programm ist nicht signiert).
-> Deinstallation über **Startmenü → Schraubwerk CRM → deinstallieren**.
+> Voraussetzungen: Windows 10/11 mit .NET Framework 4.7.2 (in Windows 10/11 enthalten).
+> Warnt Windows SmartScreen, auf **„Weitere Informationen“ → „Trotzdem ausführen“** klicken (das Setup ist nicht signiert).
+> Deinstallation über **Einstellungen → Apps → Installierte Apps → Schraubwerk CRM**.
 
 ---
 
@@ -139,7 +143,7 @@ CRMProject.sln
 │   ├── Compat/    Demo-Einrichtung, Rechnungsdruck, Design, Bild- und Tabellen-Hilfen, Bedienhinweise
 │   └── Setup/     Demo-Produktbilder (werden mit dem Programm ausgeliefert)
 ├── SQL Process/   Gespeicherte Prozeduren (_Alle_Prozeduren.sql)
-├── Installer/     Skripte für das Installationspaket (ZIP) und optional Inno Setup
+├── Installer/     Setup-Assistent (SetupWizard/Setup.cs) und Skript zum Erstellen der Setup.exe
 └── screenshots/   Bilder für diese README
 ```
 
@@ -177,15 +181,45 @@ Ohne Demo-Modus (`DemoMode=false`) wird die Datenbank wie gewohnt eingerichtet:
 
 ---
 
-## 📦 Installationspaket erstellen
+## 📦 Setup erstellen
 
-1. In Visual Studio die Konfiguration **Release** wählen und in `CRMMain/App.config` die LocalDB-Verbindung eintragen.
-2. **Erstellen → Projektmappe neu erstellen**.
-3. Den Inhalt von `CRMMain/bin/Release` (ohne `.pdb`/`.xml`) nach `Installer/Ausgabe/SchraubwerkCRM-Demo/App` kopieren,
-   die Skripte aus `Installer/` daneben legen und den Ordner als ZIP packen.
-4. Die ZIP-Datei als **GitHub-Release** hochladen.
+1. In Visual Studio die Konfiguration **Release** wählen → **Erstellen → Projektmappe neu erstellen**.
+2. **`Installer/SetupWizard/Erstellen.cmd`** doppelklicken.
+   Das Skript packt `CRMMain/bin/Release` (mit LocalDB-Verbindung und Demo-Modus) in die Setup-Datei und kompiliert
+   den Assistenten (`Setup.cs`) mit dem C#-Compiler von .NET Framework – Inno Setup o. Ä. ist nicht nötig.
+3. Ergebnis: `Installer/Ausgabe/SchraubwerkCRM-Setup.exe` → als **GitHub-Release** hochladen.
 
-Optional erzeugt `Installer/SchraubwerkCRM.iss` mit [Inno Setup](https://jrsoftware.org/isinfo.php) einen klassischen Setup-Assistenten (`setup.exe`).
+---
+
+## ⚖️ Rechtliches & Lizenzen
+
+**Lizenz:** © 2023–2026 Amir Reza Afshar – alle Rechte vorbehalten. Das Ansehen des Quellcodes sowie das Installieren und
+Testen der Demo sind ausdrücklich erlaubt. Kopieren, Weitergeben, Verändern oder kommerzielles Nutzen ist ohne
+schriftliche Zustimmung nicht gestattet. Details: [LICENSE.txt](LICENSE.txt).
+
+**Demo-Daten:** Alle Firmen, Personen, Adressen, Produkte und Beträge in der Demo sind **frei erfunden**.
+Ähnlichkeiten mit realen Unternehmen oder Personen sind zufällig. Produkt- und Benutzerbilder sind selbst erstellt.
+
+**Datenschutz:** Das Programm speichert alle Daten **ausschließlich lokal** auf dem eigenen Rechner (SQL Server LocalDB).
+Es werden keine Daten an den Entwickler oder Dritte übertragen. Nur bei fehlendem LocalDB lädt der Setup-Assistent
+den offiziellen Installer direkt von Microsoft.
+
+**Haftungsausschluss:** Die Software wird als Demo „wie besehen“ ohne Gewähr bereitgestellt. Sie ist nicht für den
+produktiven Einsatz mit echten Kunden- oder Rechnungsdaten gedacht (keine GoBD-/steuerliche Prüfung).
+
+**Verwendete Komponenten von Drittanbietern** (vollständige Lizenztexte in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt)):
+
+| Komponente | Lizenz | Hinweis |
+|---|---|---|
+| [Entity Framework 6](https://github.com/dotnet/ef6) | Apache 2.0 | mitgeliefert |
+| [HandyControls](https://github.com/ghost1372/HandyControls) | MIT | mitgeliefert |
+| [Bootstrap Icons](https://icons.getbootstrap.com/) | MIT | Programm-Symbole |
+| [SQL Server Express LocalDB](https://learn.microsoft.com/sql/database-engine/configure-windows/sql-server-express-localdb) | Microsoft-Lizenzbedingungen | **nicht** mitgeliefert, wird bei Bedarf von Microsoft geladen |
+| .NET Framework 4.7.2 | Microsoft | Bestandteil von Windows |
+
+**Unsigniertes Setup:** Die Setup-Datei ist nicht mit einem kostenpflichtigen Code-Signing-Zertifikat signiert,
+deshalb zeigt Windows SmartScreen beim ersten Start eine Warnung. Der vollständige Quellcode des Setups liegt in
+[`Installer/SetupWizard/Setup.cs`](Installer/SetupWizard/Setup.cs) und kann selbst geprüft und kompiliert werden.
 
 ---
 

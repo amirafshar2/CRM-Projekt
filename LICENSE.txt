@@ -1,0 +1,25 @@
+﻿Schraubwerk CRM – Demo-Version
+Copyright (c) 2023-2026 Amir Reza Afshar
+Alle Rechte vorbehalten.
+
+Dieses Projekt ist ein Portfolio-Projekt.
+
+Erlaubt ist:
+  - den Quellcode anzusehen und zu Bewertungszwecken (z. B. Bewerbung, Unterricht) zu lesen,
+  - die Demo-Version kostenlos herunterzuladen, zu installieren und zu testen.
+
+Nicht erlaubt ist ohne schriftliche Zustimmung des Autors:
+  - den Quellcode oder Teile davon zu kopieren, zu verändern, weiterzugeben oder zu verkaufen,
+  - die Software kommerziell oder produktiv einzusetzen.
+
+Haftungsausschluss:
+Die Software wird unentgeltlich und „wie besehen“ zu Demonstrationszwecken bereitgestellt.
+Sie ist nicht für den produktiven Einsatz bestimmt. Für Schäden wird – soweit gesetzlich
+zulässig, insbesondere außer bei Vorsatz und grober Fahrlässigkeit – keine Haftung übernommen.
+
+Alle Namen, Firmen, Adressen und Daten in der Demo-Datenbank sind frei erfunden.
+Ähnlichkeiten mit realen Personen oder Unternehmen sind zufällig.
+
+Verwendete Komponenten von Drittanbietern und deren Lizenzen: siehe THIRD-PARTY-NOTICES.txt
+
+Kontakt: info@amirrezaafshar.de – https://amirrezaafshar.de
